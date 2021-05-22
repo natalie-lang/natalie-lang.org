@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Natalie Programming Language</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/typesafe.css">
+    <style> pre { border: none; }</style>
+  </head>
+  <body>
+    <h1><img src="icon.png" alt="temporary logo for Natalie" style="vertical-align: middle"> Natalie Programming Language</h1>
+    <p>Natalie is a work-in-progress Ruby implementation, compiled to C++, by <a href="https://timmorgan.dev">Tim Morgan</a>.</p>
+    <ul>
+      <li>Follow development: <a href="https://github.com/seven1m/natalie">GitHub</a></li>
+      <li>Watch hacking sessions: <a href="https://www.youtube.com/playlist?list=PLWUx_XkUoGTq-nkbhnk6PN4m109ISo5BX">YouTube</a></li>
+    </ul>
+    <h2>What can Natalie do?</h2>
+    <p>I'm happy to announce that as of 2021, Natalie is a good enough Ruby compiler to be able to <strong>compile itself</strong>!
+    (Because the Natalie compiler is written in Ruby.)</p>
+    <p>But since that's hard to show in a paragraph,
+    here's an example script that I wrote for my kids' school math game that demonstrates a decent amount of Natalie's compatibility with Ruby:</p>
+    <!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #aaaaaa; font-style: italic">#!/usr/bin/env ruby</span>
+
+<span style="color: #aaaaaa; font-style: italic"># This script brute-force computes solutions for a 6x6 grid of numbers (1-36) using</span>
+<span style="color: #aaaaaa; font-style: italic"># 3 given digits (chosen by dice roll). See https://p.widencdn.net/gxkq6m/Howtoplayguide</span>
+<span style="color: #aaaaaa; font-style: italic">#</span>
+<span style="color: #0000aa">class</span> <span style="color: #00aa00; text-decoration: underline">BoardSlam</span>
+  <span style="color: #aa0000">BOARD</span> = <span style="color: #009999">1</span>..<span style="color: #009999">36</span>
+  <span style="color: #aa0000">OPERATIONS</span> = <span style="color: #aa5500">%w(+ - * /)</span>
+
+  <span style="color: #0000aa">def</span> <span style="color: #00aa00">initialize</span>(x, y, z)
+    <span style="color: #aa0000">@numbers</span> = [x, y, z]
+    <span style="color: #aa0000">@answers</span> = {}
+  <span style="color: #0000aa">end</span>
+
+  <span style="color: #0000aa">attr_reader</span> <span style="color: #0000aa">:numbers</span>, <span style="color: #0000aa">:answers</span>
+
+  <span style="color: #0000aa">def</span> <span style="color: #00aa00">variants</span>(num)
+    [num, <span style="color: #aa5500">&quot;#{</span>num<span style="color: #aa5500">}^0&quot;</span>, <span style="color: #aa5500">&quot;#{</span>num<span style="color: #aa5500">}^2&quot;</span>, <span style="color: #aa5500">&quot;#{</span>num<span style="color: #aa5500">}^3&quot;</span>]
+  <span style="color: #0000aa">end</span>
+
+  <span style="color: #0000aa">def</span> <span style="color: #00aa00">expand</span>(num)
+    <span style="color: #0000aa">return</span> num <span style="color: #0000aa">if</span> num.is_a?(<span style="color: #00aaaa">Integer</span>)
+    num, exp = num.split(<span style="color: #aa5500">&#39;^&#39;</span>).map(&amp;<span style="color: #0000aa">:to_i</span>)
+    num ** exp
+  <span style="color: #0000aa">end</span>
+
+  <span style="color: #0000aa">def</span> <span style="color: #00aa00">results</span>
+    each_order <span style="color: #0000aa">do</span> |x_base, y_base, z_base|
+      each_variant(x_base, y_base, z_base) <span style="color: #0000aa">do</span> |(x_pretty, x), (y_pretty, y), (z_pretty, z)|
+        each_operation_pair <span style="color: #0000aa">do</span> |op1, op2|
+          result1 = x.send(op1, y)
+          <span style="color: #0000aa">next</span> <span style="color: #0000aa">if</span> op1 == <span style="color: #aa5500">&#39;/&#39;</span> &amp;&amp; x % y != <span style="color: #009999">0</span>
+          result2 = result1.send(op2, z)
+          <span style="color: #0000aa">next</span> <span style="color: #0000aa">if</span> op2 == <span style="color: #aa5500">&#39;/&#39;</span> &amp;&amp; result1 % z != <span style="color: #009999">0</span>
+          <span style="color: #0000aa">if</span> <span style="color: #aa0000">BOARD</span>.include?(result2) <span style="color: #0000aa">and</span> !answers.key?(result2)
+            answers[result2] = <span style="color: #aa5500">&quot;#{</span>x_pretty.to_s.ljust(<span style="color: #009999">3</span>)<span style="color: #aa5500">} #{</span>op1<span style="color: #aa5500">} #{</span>y_pretty.to_s.ljust(<span style="color: #009999">3</span>)<span style="color: #aa5500">} #{</span>op2<span style="color: #aa5500">} #{</span>z_pretty.to_s.ljust(<span style="color: #009999">3</span>)<span style="color: #aa5500">}&quot;</span>
+          <span style="color: #0000aa">end</span>
+        <span style="color: #0000aa">end</span>
+      <span style="color: #0000aa">end</span>
+    <span style="color: #0000aa">end</span>
+    answers
+  <span style="color: #0000aa">end</span>
+
+  <span style="color: #0000aa">def</span> <span style="color: #00aa00">each_order</span>
+    <span style="color: #aa0000">@numbers</span>.permutation.each <span style="color: #0000aa">do</span> |(x, y, z)|
+      <span style="color: #0000aa">yield</span> x, y, z
+    <span style="color: #0000aa">end</span>
+  <span style="color: #0000aa">end</span>
+
+  <span style="color: #0000aa">def</span> <span style="color: #00aa00">each_variant</span>(x_base, y_base, z_base)
+    variants(x_base).each <span style="color: #0000aa">do</span> |x|
+      x_expanded = expand(x)
+      variants(y_base).each <span style="color: #0000aa">do</span> |y|
+        y_expanded = expand(y)
+        variants(z_base).each <span style="color: #0000aa">do</span> |z|
+          z_expanded = expand(z)
+          <span style="color: #0000aa">yield</span>([x, x_expanded], [y, y_expanded], [z, z_expanded])
+        <span style="color: #0000aa">end</span>
+      <span style="color: #0000aa">end</span>
+    <span style="color: #0000aa">end</span>
+  <span style="color: #0000aa">end</span>
+
+  <span style="color: #0000aa">def</span> <span style="color: #00aa00">each_operation_pair</span>
+    <span style="color: #aa0000">OPERATIONS</span>.each <span style="color: #0000aa">do</span> |op1|
+      <span style="color: #aa0000">OPERATIONS</span>.each <span style="color: #0000aa">do</span> |op2|
+        <span style="color: #0000aa">yield</span>(op1, op2)
+        <span style="color: #0000aa">yield</span>(op2, op1)
+      <span style="color: #0000aa">end</span>
+    <span style="color: #0000aa">end</span>
+  <span style="color: #0000aa">end</span>
+
+  <span style="color: #0000aa">def</span> <span style="color: #00aa00">missing</span>
+    <span style="color: #aa0000">BOARD</span>.to_a - results.keys
+  <span style="color: #0000aa">end</span>
+<span style="color: #0000aa">end</span>
+
+<span style="color: #0000aa">if</span> <span style="color: #aa0000">$0</span> == <span style="color: #00aaaa">__FILE__</span>
+  <span style="color: #0000aa">if</span> <span style="color: #aa0000">ARGV</span>.size != <span style="color: #009999">3</span>
+    <span style="color: #00aaaa">puts</span> <span style="color: #aa5500">&#39;usage: bin/natalie examples/boardslam.rb 3 5 1&#39;</span>
+    <span style="color: #00aaaa">exit</span>
+  <span style="color: #0000aa">end</span>
+  board = <span style="color: #aa0000">BoardSlam</span>.new(*<span style="color: #aa0000">ARGV</span>.map(&amp;<span style="color: #0000aa">:to_i</span>))
+  board.results.sort.each <span style="color: #0000aa">do</span> |result, equation|
+    <span style="color: #00aaaa">puts</span> equation.ljust(<span style="color: #009999">15</span>) + <span style="color: #aa5500">&#39; = &#39;</span> + result.to_s
+  <span style="color: #0000aa">end</span>
+  <span style="color: #00aaaa">puts</span>
+  <span style="color: #0000aa">if</span> board.missing.any?
+    <span style="color: #00aaaa">puts</span> <span style="color: #aa5500">&quot;missing answers: #{</span>board.missing.join(<span style="color: #aa5500">&#39;, &#39;</span>)<span style="color: #aa5500">}&quot;</span>
+  <span style="color: #0000aa">else</span>
+    <span style="color: #00aaaa">puts</span> <span style="color: #aa5500">&quot;all answers possible!&quot;</span>
+  <span style="color: #0000aa">end</span>
+<span style="color: #0000aa">end</span>
+</pre></div>
+
+    <h3>Output:</h3>
+
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #888888">→ bin/natalie examples/boardslam.rb 3 5 1</span>
+
+<span style="color: #888888">3   - 5^0 - 1   = 1</span>
+<span style="color: #888888">3   - 5^0 * 1   = 2</span>
+<span style="color: #888888">3   + 5^0 - 1   = 3</span>
+<span style="color: #888888">3   + 5^0 * 1   = 4</span>
+<span style="color: #888888">3   + 5^0 + 1   = 5</span>
+<span style="color: #888888">3^0 + 5   * 1   = 6</span>
+<span style="color: #888888">3   + 5   - 1   = 7</span>
+<span style="color: #888888">3   + 5   * 1   = 8</span>
+<span style="color: #888888">3   + 5   + 1   = 9</span>
+<span style="color: #888888">3^2 + 5^0 * 1   = 10</span>
+<span style="color: #888888">3^2 + 5^0 + 1   = 11</span>
+<span style="color: #888888">5   - 1   * 3   = 12</span>
+<span style="color: #888888">3^2 + 5   - 1   = 13</span>
+<span style="color: #888888">3   * 5   - 1   = 14</span>
+<span style="color: #888888">3   * 5   * 1   = 15</span>
+<span style="color: #888888">3   * 5   + 1   = 16</span>
+<span style="color: #888888">5^2 - 3^2 + 1   = 17</span>
+<span style="color: #888888">5   + 1   * 3   = 18</span>
+<span style="color: #888888">3   + 1   * 5   = 20</span>
+<span style="color: #888888">3^3 - 5   - 1   = 21</span>
+<span style="color: #888888">3^3 - 5   * 1   = 22</span>
+<span style="color: #888888">3^3 - 5   + 1   = 23</span>
+<span style="color: #888888">3^0 * 5^2 - 1   = 24</span>
+<span style="color: #888888">3^0 + 5^2 - 1   = 25</span>
+<span style="color: #888888">3^0 + 5^2 * 1   = 26</span>
+<span style="color: #888888">3   + 5^2 - 1   = 27</span>
+<span style="color: #888888">3   + 5^2 * 1   = 28</span>
+<span style="color: #888888">3   + 5^2 + 1   = 29</span>
+<span style="color: #888888">3^3 + 5   - 1   = 31</span>
+<span style="color: #888888">3^3 + 5   * 1   = 32</span>
+<span style="color: #888888">3^2 + 5^2 - 1   = 33</span>
+<span style="color: #888888">3^2 + 5^2 * 1   = 34</span>
+<span style="color: #888888">3^2 + 5^2 + 1   = 35</span>
+<span style="color: #888888">5   - 1   * 3^2 = 36</span>
+
+<span style="color: #888888">missing answers: 19, 30</span>
+</pre></div>
+
+
+    <h2>Helping Out</h2>
+    <p>You can help with the development of Natalie! There are <a href="https://github.com/seven1m/natalie/issues">many issues</a>
+    documented on the GitHub project if you want some direction. Or better yet, you may want to try Natalie on a script of your own
+    and see what is broken. Then fix it! :-)</p>
+  </body>
+</html>
