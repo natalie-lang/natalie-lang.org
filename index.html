@@ -160,5 +160,37 @@
     <p>You can help with the development of Natalie! There are <a href="https://github.com/seven1m/natalie/issues">many issues</a>
     documented on the GitHub project if you want some direction. Or better yet, you may want to try Natalie on a script of your own
     and see what is broken. Then fix it! :-)</p>
+
+    <div id="is-natalie-ruby-yet-stats-panel">
+    <h2>Is Natalie Ruby yet?</h2>
+    <p>
+      Based on the specs from <a href="https://github.com/ruby/spec/">github.com/ruby/spec</a> and as of today we have: </br>
+      <div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;">
+        <span style="color: #00aa00;font-weight: 900;font-size: 1.2em;" id="successful-tests-counter">0</span> tests passing </br>
+        <span style="color: #aa5500;font-weight: 900;font-size: 1.2em;" id="failing-tests-counter">0</span> tests failing </br>
+        <span style="color: #aa0000;font-weight: 900;font-size: 1.2em;" id="erroring-tests-counter">0</span> tests erroring </br>
+        <span style="color: #3d0000;font-weight: 900;font-size: 1.2em;" id="not-compiling-tests-counter">0</span> tests not compiling </br>
+        <span style="color: #830a46;font-weight: 900;font-size: 1.2em;" id="crashing-tests-counter">0</span> tests crashing </br>
+        <span style="color: #888888;font-weight: 900;font-size: 1.2em;" id="timeout-tests-counter">0</span> tests timing out </br>
+      </div>
+    </p>
+    </div>
+    <script>
+      fetch('/specs/stats.json')
+        .then(res => res.json())
+        .then(tests => tests[0].stats)
+        .then(latest => {
+          document.getElementById('successful-tests-counter').innerText = latest["Successful Examples"]
+          document.getElementById('failing-tests-counter').innerText = latest["Failed Examples"]
+          document.getElementById('erroring-tests-counter').innerText = latest["Errored Examples"]
+          document.getElementById('not-compiling-tests-counter').innerText = latest["Compile Errors"]
+          document.getElementById('crashing-tests-counter').innerText = latest["Crashes"]
+          document.getElementById('timeout-tests-counter').innerText = latest["Timeouts"]
+        })
+        .catch(() => {
+          console.log("Hiding stuff")
+          document.getElementById("is-natalie-ruby-yet-stats-panel").style = "display: none;"
+        })
+    </script>
   </body>
 </html>
