@@ -42,7 +42,7 @@ anychart.onDocumentReady(()=> {
       chart.container('chart');
       chart.draw();
 
-      return data;
+      return data.reverse();
     })
     .then(tests => tests[0].stats)
     .then(latest => {
