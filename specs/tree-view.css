@@ -1,0 +1,149 @@
+:root {
+  --success-color: #64dd17;
+  --failure-color: #ab47bc;
+  --error-color: #b71c1c;
+  --compile-error-color: #000000;
+  --timeout-color: #888888;
+  --crash-color: #830a46;
+}
+
+.tree-view-body:not(.active) {
+  display: none;
+}
+
+.tree-view-header {
+  margin: 1em 0 1em 0;
+  display: flex;
+  cursor: pointer;
+}
+
+.tree-view-title {
+  flex-grow: 1;
+}
+
+/* Opened and closed icons for each tree view entry */
+.tree-view-header[for] .tree-view-title:before {
+  content: '▸ ';
+}
+
+.tree-view-header.active[for] .tree-view-title:before {
+  content: '▾ ';
+}
+
+/* Stats */
+.tree-view-stats {
+  display: flex;
+}
+
+.tree-view-stats .stats-counter {
+  margin-right: 1em;
+  display: flex
+}
+
+.tree-view-stats .stats-counter div {
+  font-weight: bold;
+  width: 4ch;
+  text-align: right;
+}
+
+
+/* All stats counter variants */
+.stats-counter.success div {
+  color: var(--success-color);
+}
+.stats-counter.success:after {
+  content: 'passed';
+  margin-left: 3px;
+}
+
+.stats-counter.failures div {
+  color: var(--failure-color);
+}
+.stats-counter.failures:after {
+  content: 'failed';
+  margin-left: 3px;
+}
+
+.stats-counter.errors div {
+  color: var(--error-color);
+}
+.stats-counter.errors:after {
+  content: 'errored';
+  margin-left: 3px;
+}
+
+.stats-counter.compiled {
+  color: var(--compile-error-color);
+}
+.stats-counter.compiled:after {
+  content: 'compilation errors';
+  margin-left: 3px;
+}
+
+.stats-counter.timeouted div {
+  color: var(--timeout-color);
+}
+.stats-counter.timeouted:after {
+  content: 'timed out';
+  margin-left: 3px;
+}
+
+.stats-counter.crashed div {
+  color: var(--crash-color);
+}
+.stats-counter.crashed:after {
+  content: 'crashed';
+  margin-left: 3px;
+}
+
+
+/* Progress bar */
+.progress-bar {
+  width: 200px;
+  height: 20px;
+  display: flex;
+}
+
+.progress-bar-success {
+  background-color: var(--success-color);
+}
+
+.progress-bar-failures {
+  background-color: var(--failure-color);
+}
+
+.progress-bar-errors {
+  background-color: var(--error-color);
+}
+
+
+/* Error message container (containing backtrace and error message) */
+.error-message {
+  background: #ffffff;
+  overflow: auto;
+  width: auto;
+  border: solid gray;
+  border-width: .1em .1em .1em .8em;
+  padding: .2em .6em;
+}
+
+
+/* Media queries for minimal responsiveness */
+@media only screen and (max-width: 1480px) {
+  .tree-view-header, .tree-view-stats {
+    flex-direction: column;
+  }
+
+  .tree-view-stats {
+    display: none;
+    margin-right: 0 !important;
+  }
+
+  .progress-bar {
+    margin-left: 5ch;
+  }
+
+  .tree-view-header.active .tree-view-stats {
+    display: flex;
+  }
+}
