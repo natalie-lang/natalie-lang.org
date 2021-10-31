@@ -4,7 +4,7 @@ var tree_view = null;
 document.addEventListener('DOMContentLoaded', () => {
   tree_view = new TreeView(document.querySelector('.tree-view-root'))
 
-  fetch('/specs/current.json')
+  fetch('/specs-api/current.json')
     .then(res => res.json())
     .then(data => {
       specResults = data.stats

@@ -1,5 +1,5 @@
 anychart.onDocumentReady(()=> {
-  fetch('/specs/stats.json')
+  fetch('/specs-api/stats.json')
     .then(res => res.json())
     .then(data => {
       data.reverse();
