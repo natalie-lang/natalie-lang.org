@@ -54,7 +54,7 @@ class Node {
     linkContainer.href = `https://www.github.com/ruby/spec/tree/master/${linkPath}`
     linkContainer.target = '_blank'
     linkContainer.rel = 'noopener noreferrer'
-    linkContainer.textContent = '🡕'
+    linkContainer.textContent = '↗'
     title.innerHTML += ' '
     title.append(linkContainer)
   }
