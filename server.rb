@@ -3,6 +3,7 @@ require 'socket'
 server = TCPServer.new 3000
 
 FILES = {
+  '/contributors.html' => include_str!('contributors.html'),
   '/demo.gif' => include_str!('demo.gif'),
   '/icon.svg' => include_str!('icon.svg'),
   '/index.html' => include_str!('index.html'),
@@ -16,6 +17,12 @@ FILES = {
   '/specs/specs.js' => include_str!('specs/specs.js'),
   '/specs/tree-view.css' => include_str!('specs/tree-view.css'),
   '/specs/tree_view.js' => include_str!('specs/tree_view.js'),
+}
+
+PATH_MAP = {
+  '/' => '/index.html',
+  '/specs' => '/specs/index.html',
+  '/contributors' => '/contributors.html',
 }
 
 CONTENT_TYPES = {
@@ -40,8 +47,7 @@ pids = (1..10).map do
         headers[name] = value
       end
       if method.upcase == 'GET'
-        request_target = '/index.html' if request_target == '/'
-        request_target = '/specs/index.html' if request_target == '/specs'
+        request_target = PATH_MAP.fetch(request_target, request_target)
         if (content = FILES[request_target])
           extension = request_target.split('.').last
           content_type = CONTENT_TYPES.fetch(extension, 'text/plain')
