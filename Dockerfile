@@ -22,6 +22,8 @@ RUN /natalie/bin/natalie -c server server.rb && \
 FROM ubuntu:jammy
 COPY --from=builder /natalie-lang.org/server /server
 
+COPY CHECKS /
+
 RUN useradd deploy
 USER deploy
 
