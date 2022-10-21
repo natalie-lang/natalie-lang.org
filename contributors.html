@@ -29,7 +29,7 @@
 <script>
   async function update() {
     const list = document.getElementById('list')
-    const r = await fetch('https://api.github.com/repos/seven1m/natalie/contributors')
+    const r = await fetch('https://api.github.com/repos/seven1m/natalie/contributors?per_page=100')
     const data = await r.json()
     data.forEach((user) => {
       const img = document.createElement('img')
