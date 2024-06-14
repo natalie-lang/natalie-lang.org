@@ -8,6 +8,7 @@ FILES = {
   '/icon.svg' => include_str!('icon.svg'),
   '/index.html' => include_str!('index.html'),
   '/main.js' => include_str!('main.js'),
+  '/plotly-2.32.0.min.js' => include_str!('plotly-2.32.0.min.js'),
   '/typesafe.css' => include_str!('typesafe.css'),
   '/specs/directory_node.js' => include_str!('specs/directory_node.js'),
   '/specs/error_message_node.js' => include_str!('specs/error_message_node.js'),

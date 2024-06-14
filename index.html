@@ -9,8 +9,7 @@
       em.highlight { font-style: normal; background-color: #ffc; }
       h2 { border-bottom: 3px double #999; }
     </style>
-    <script src="https://cdn.anychart.com/releases/8.10.0/js/anychart-base.min.js"></script>
-    <script src="main.js"></script>
+    <script src="plotly-2.32.0.min.js" charset="utf-8"></script>
   </head>
   <body>
     <h1><img src="icon.svg" alt="logo for Natalie" style="vertical-align: middle; width: 64px"> Natalie, a Ruby Implementation</h1>
@@ -38,7 +37,7 @@
 
     <div id="is-natalie-ruby-yet-stats-panel">
       <h2>Is Natalie Ruby yet?</h2>
-      <div id="chart" style="height:400px;"></div>
+      <div id="chart" style="height:400px;margin:0 0 -20px -50px"></div>
       <p>
         Based on the specs from <a href="https://github.com/ruby/spec/">github.com/ruby/spec</a> and as of today we have:
       </p>
@@ -57,5 +56,6 @@
         A more detailed overview about each individual spec and it's errors can be found <a href="/specs">here</a>.
       </p>
     </div>
+    <script src="main.js"></script>
   </body>
 </html>
