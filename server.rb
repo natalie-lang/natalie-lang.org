@@ -57,7 +57,7 @@ pids = (1..10).map do
           client.write "\r\n"
           client.write content
           p([method, request_target, 200])
-        elsif request_target == '/stats/stats.json' || request_target == '/stats/current.json'
+        elsif %w[/stats/stats.json /stats/current.json /stats/perf_stats.json].include?(request_target)
           extension = request_target.split('.').last
           content_type = CONTENT_TYPES.fetch(extension, 'text/plain')
           client.write "HTTP/1.1 200\r\n"
@@ -80,7 +80,7 @@ pids = (1..10).map do
     rescue StandardError => e
       p([e.class.name, e.message, e.backtrace[0..10]])
     ensure
-      client.close
+      client&.close
     end
   end
 end
