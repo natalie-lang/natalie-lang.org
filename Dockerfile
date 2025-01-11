@@ -1,4 +1,4 @@
-FROM ruby:3.3 as builder
+FROM ruby:3.4 as builder
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y -q build-essential autoconf libtool lcov
 RUN gem install bundler --no-doc
@@ -7,7 +7,7 @@ ENV LC_ALL C.UTF-8
 
 RUN git clone https://github.com/natalie-lang/natalie.git /natalie && \
   cd /natalie && \
-  git checkout c98726be03c252969ea7820f6e2ad3c6facc7376
+  git checkout b3ffd863b24552ef24df83054aaf3341b0e6c412
 
 WORKDIR /natalie
 RUN rake build_release
@@ -19,7 +19,7 @@ RUN /natalie/bin/natalie -c server server.rb && \
 
 # # # #
 
-FROM ubuntu:jammy
+FROM ubuntu:noble
 COPY --from=builder /natalie-lang.org/server /server
 
 COPY CHECKS /
