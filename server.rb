@@ -2,6 +2,12 @@ require 'socket'
 
 server = TCPServer.new 3000
 
+if RUBY_ENGINE != 'natalie'
+  def include_str!(path)
+    File.read(path)
+  end
+end
+
 FILES = {
   '/contributors.html' => include_str!('contributors.html'),
   '/demo.gif' => include_str!('demo.gif'),
