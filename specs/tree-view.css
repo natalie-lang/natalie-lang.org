@@ -11,6 +11,11 @@
   display: none;
 }
 
+body.hide-passing .tree-view-header.passing,
+body.hide-passing .tree-view-body.passing {
+  display: none;
+}
+
 .tree-view-header {
   margin: 1em 0 1em 0;
   display: flex;

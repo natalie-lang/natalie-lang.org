@@ -10,6 +10,11 @@ class FileNode extends Node {
   render() {
     super.render()
 
+    if(isPassing(this.data)) {
+      this.header.classList.add('passing')
+      this.container.classList.add('passing')
+    }
+
     this.addSpecLinkToHeader(this.path.slice(1).join('/'))
     var statsContainer = document.createElement('div')
     statsContainer.classList.add('tree-view-stats')
