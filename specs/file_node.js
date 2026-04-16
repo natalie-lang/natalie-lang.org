@@ -10,6 +10,15 @@ class FileNode extends Node {
   render() {
     super.render()
 
+    if(isPassing(this.data)) {
+      this.header.classList.add('passing')
+      this.container.classList.add('passing')
+    }
+
+    var failureOrder = -(this.data.failures || 0)
+    this.header.style.setProperty('--failure-order', failureOrder)
+    this.container.style.setProperty('--failure-order', failureOrder)
+
     this.addSpecLinkToHeader(this.path.slice(1).join('/'))
     var statsContainer = document.createElement('div')
     statsContainer.classList.add('tree-view-stats')

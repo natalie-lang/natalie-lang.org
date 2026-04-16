@@ -11,21 +11,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
       renderDate(data.date)
 
-      // If a search query was passed we execute the search instead of displaying
-      // all spec results.
+      // Restore filter state from URL params on initial load.
       if(window.location.search.length !== 0) {
         var params = new URLSearchParams(window.location.search)
         if(params.has('q')) {
-          var query = params.get('q')
-          if(query.length > 0) {
-            document.querySelector('#search').value = query
-            search(query);
-            return;
-          }
+          document.getElementById('search').value = params.get('q')
+        }
+        if(params.get('hide_passing') === '1') {
+          document.getElementById('hide-passing').checked = true
+        }
+        if(params.get('sort_failures') === '1') {
+          document.getElementById('sort-failures').checked = true
         }
       }
 
-      tree_view.rerender(specResults, true)
+      applyHidePassing()
+      applySortByFailures()
+      applySearch()
     })
     .catch(error => {
       console.log(error)
@@ -54,36 +56,53 @@ document.addEventListener('DOMContentLoaded', () => {
   // On writing to the search input. This will be delayed by 1s to prevent
   // continous re-searching.
   var searchTimeout = null
-  document.getElementById('search').addEventListener('input', (e) => {
+  document.getElementById('search').addEventListener('input', () => {
     if(searchTimeout) {
       clearTimeout(searchTimeout)
     }
-
-    var target = e.currentTarget;
-    searchTimeout = setTimeout(() => {
-      search(target.value)
-    }, 1000)
+    searchTimeout = setTimeout(applySearch, 1000)
   })
+
+  document.getElementById('hide-passing').addEventListener('change', applyHidePassing)
+  document.getElementById('sort-failures').addEventListener('change', applySortByFailures)
 });
 
-// Perform a search on the query. If the query is empty all spec results will be rerendered.
-function search(query) {
-  query = query.trim().toLowerCase()
-  var basePath = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
-  if(query.length == 0) {
-    window.history.pushState(null, null, basePath)
+function updateUrl() {
+  var query = document.getElementById('search').value.trim().toLowerCase()
+  var hidePassing = document.getElementById('hide-passing').checked
+  var sortFailures = document.getElementById('sort-failures').checked
+  var basePath = `${window.location.protocol}//${window.location.host}${window.location.pathname}`
+  var urlParams = new URLSearchParams()
+  if(query.length > 0) urlParams.set('q', query)
+  if(hidePassing) urlParams.set('hide_passing', '1')
+  if(sortFailures) urlParams.set('sort_failures', '1')
+  var queryString = urlParams.toString()
+  window.history.pushState(null, null, queryString.length > 0 ? `${basePath}?${queryString}` : basePath)
+}
+
+function applySearch() {
+  var query = document.getElementById('search').value.trim().toLowerCase()
+  updateUrl()
+
+  if(query.length === 0) {
     tree_view.rerender(specResults, true)
     return
   }
 
-  var urlParams = new URLSearchParams()
-  urlParams.set('q', query);
-  window.history.pushState(null, null, `${basePath}?${urlParams.toString()}`)
   var copy = JSON.parse(JSON.stringify(specResults))
-
   searchObject(query, copy)
   tree_view.rerender(copy)
   tree_view.openRecursively()
+}
+
+function applyHidePassing() {
+  document.body.classList.toggle('hide-passing', document.getElementById('hide-passing').checked)
+  updateUrl()
+}
+
+function applySortByFailures() {
+  document.body.classList.toggle('sort-by-failures', document.getElementById('sort-failures').checked)
+  updateUrl()
 }
 
 // Searches through a javascript object using the #matches method to to check whether
@@ -125,6 +144,22 @@ function matches(regex, key, path) {
     path.join(' ').match(regex) ||
     path.join('/').match(regex) ||
     path.join('#').match(regex)
+}
+
+function isPassing(fileData) {
+  return fileData.compiled &&
+    !fileData.crashed &&
+    !fileData.timeouted &&
+    fileData.failures === 0 &&
+    fileData.errors === 0
+}
+
+function dataIsAllPassing(data) {
+  if(data.compiled !== undefined) {
+    return isPassing(data)
+  }
+  var values = Object.values(data)
+  return values.length > 0 && values.every(dataIsAllPassing)
 }
 
 // Render the time the specs ran last into the introduction paragraph.
