@@ -20,9 +20,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if(params.get('hide_passing') === '1') {
           document.getElementById('hide-passing').checked = true
         }
+        if(params.get('sort_failures') === '1') {
+          document.getElementById('sort-failures').checked = true
+        }
       }
 
       applyHidePassing()
+      applySortByFailures()
       applySearch()
     })
     .catch(error => {
@@ -60,15 +64,18 @@ document.addEventListener('DOMContentLoaded', () => {
   })
 
   document.getElementById('hide-passing').addEventListener('change', applyHidePassing)
+  document.getElementById('sort-failures').addEventListener('change', applySortByFailures)
 });
 
 function updateUrl() {
   var query = document.getElementById('search').value.trim().toLowerCase()
   var hidePassing = document.getElementById('hide-passing').checked
+  var sortFailures = document.getElementById('sort-failures').checked
   var basePath = `${window.location.protocol}//${window.location.host}${window.location.pathname}`
   var urlParams = new URLSearchParams()
   if(query.length > 0) urlParams.set('q', query)
   if(hidePassing) urlParams.set('hide_passing', '1')
+  if(sortFailures) urlParams.set('sort_failures', '1')
   var queryString = urlParams.toString()
   window.history.pushState(null, null, queryString.length > 0 ? `${basePath}?${queryString}` : basePath)
 }
@@ -90,6 +97,11 @@ function applySearch() {
 
 function applyHidePassing() {
   document.body.classList.toggle('hide-passing', document.getElementById('hide-passing').checked)
+  updateUrl()
+}
+
+function applySortByFailures() {
+  document.body.classList.toggle('sort-by-failures', document.getElementById('sort-failures').checked)
   updateUrl()
 }
 

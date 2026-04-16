@@ -18,6 +18,10 @@ class DirectoryNode extends Node {
       this.container.classList.add('passing')
     }
 
+    var failureOrder = -this.getChildrenStatsCount('failures')
+    this.header.style.setProperty('--failure-order', failureOrder)
+    this.container.style.setProperty('--failure-order', failureOrder)
+
     this.addSpecLinkToHeader(this.path.slice(1).join('/'))
 
     if(opened) {

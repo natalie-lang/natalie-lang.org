@@ -11,9 +11,20 @@
   display: none;
 }
 
+.tree-view-root,
+.tree-view-body.active {
+  display: flex;
+  flex-direction: column;
+}
+
 body.hide-passing .tree-view-header.passing,
 body.hide-passing .tree-view-body.passing {
   display: none;
+}
+
+body.sort-by-failures .tree-view-header,
+body.sort-by-failures .tree-view-body {
+  order: var(--failure-order, 0);
 }
 
 .tree-view-header {
