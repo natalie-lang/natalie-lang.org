@@ -16,6 +16,12 @@ class DirectoryNode extends Node {
     if(dataIsAllPassing(this.data)) {
       this.header.classList.add('passing')
       this.container.classList.add('passing')
+    } else if(dataIsAllUnactionable(this.data)) {
+      this.header.classList.add('unactionable')
+      this.container.classList.add('unactionable')
+    } else if(dataIsAllUnactionableOrPassing(this.data)) {
+      this.header.classList.add('unactionable-or-passing')
+      this.container.classList.add('unactionable-or-passing')
     }
 
     var failureOrder = -this.getChildrenStatsCount('failures')

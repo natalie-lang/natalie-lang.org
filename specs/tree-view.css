@@ -22,6 +22,16 @@ body.hide-passing .tree-view-body.passing {
   display: none;
 }
 
+body.hide-unactionable .tree-view-header.unactionable,
+body.hide-unactionable .tree-view-body.unactionable {
+  display: none;
+}
+
+body.hide-passing.hide-unactionable .tree-view-header.unactionable-or-passing,
+body.hide-passing.hide-unactionable .tree-view-body.unactionable-or-passing {
+  display: none;
+}
+
 body.sort-by-failures .tree-view-header,
 body.sort-by-failures .tree-view-body {
   order: var(--failure-order, 0);
