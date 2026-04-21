@@ -54,6 +54,7 @@ pids = (1..10).map do
         headers[name] = value
       end
       if method.upcase == 'GET'
+        request_target = request_target.split('?', 2).first
         request_target = PATH_MAP.fetch(request_target, request_target)
         if (content = FILES[request_target])
           extension = request_target.split('.').last
