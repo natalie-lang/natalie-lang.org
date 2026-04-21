@@ -7,6 +7,11 @@ class ErrorMessageNode extends Node {
   render() {
     super.render()
 
+    if(isUnactionableMessage(this.data)) {
+      this.header.classList.add('unactionable')
+      this.container.classList.add('unactionable')
+    }
+
     var messageParts = this.data.split('\n')
     var spec = messageParts[0]
     var backtrace = messageParts[messageParts.length - 1]

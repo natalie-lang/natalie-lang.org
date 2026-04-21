@@ -23,10 +23,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if(params.get('sort_failures') === '1') {
           document.getElementById('sort-failures').checked = true
         }
+        if(params.get('hide_unactionable') === '1') {
+          document.getElementById('hide-unactionable').checked = true
+        }
       }
 
       applyHidePassing()
       applySortByFailures()
+      applyHideUnactionable()
       applySearch()
     })
     .catch(error => {
@@ -65,17 +69,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('hide-passing').addEventListener('change', applyHidePassing)
   document.getElementById('sort-failures').addEventListener('change', applySortByFailures)
+  document.getElementById('hide-unactionable').addEventListener('change', applyHideUnactionable)
 });
 
 function updateUrl() {
   var query = document.getElementById('search').value.trim().toLowerCase()
   var hidePassing = document.getElementById('hide-passing').checked
   var sortFailures = document.getElementById('sort-failures').checked
+  var hideUnactionable = document.getElementById('hide-unactionable').checked
   var basePath = `${window.location.protocol}//${window.location.host}${window.location.pathname}`
   var urlParams = new URLSearchParams()
   if(query.length > 0) urlParams.set('q', query)
   if(hidePassing) urlParams.set('hide_passing', '1')
   if(sortFailures) urlParams.set('sort_failures', '1')
+  if(hideUnactionable) urlParams.set('hide_unactionable', '1')
   var queryString = urlParams.toString()
   window.history.pushState(null, null, queryString.length > 0 ? `${basePath}?${queryString}` : basePath)
 }
@@ -103,6 +110,41 @@ function applyHidePassing() {
 function applySortByFailures() {
   document.body.classList.toggle('sort-by-failures', document.getElementById('sort-failures').checked)
   updateUrl()
+}
+
+function applyHideUnactionable() {
+  document.body.classList.toggle('hide-unactionable', document.getElementById('hide-unactionable').checked)
+  updateUrl()
+}
+
+function isUnactionableMessage(msg) {
+  return msg.indexOf('raise_comptime_value_error') !== -1 ||
+    msg.indexOf('eval() only works on static strings') !== -1
+}
+
+function isFileAllUnactionable(fileData) {
+  if(isPassing(fileData)) return false
+  if(fileData.crashed || fileData.timeouted) return false
+  var msgs = fileData.error_messages || []
+  if(msgs.length === 0) return false
+  return msgs.every(isUnactionableMessage)
+}
+
+function dataIsAllUnactionableOrPassing(data) {
+  if(data.compiled !== undefined) {
+    return isPassing(data) || isFileAllUnactionable(data)
+  }
+  var values = Object.values(data)
+  return values.length > 0 && values.every(dataIsAllUnactionableOrPassing)
+}
+
+function dataIsAllUnactionable(data) {
+  if(data.compiled !== undefined) {
+    return isFileAllUnactionable(data)
+  }
+  var values = Object.values(data)
+  if(values.length === 0) return false
+  return values.every(dataIsAllUnactionable)
 }
 
 // Searches through a javascript object using the #matches method to to check whether

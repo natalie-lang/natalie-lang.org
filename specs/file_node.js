@@ -13,6 +13,9 @@ class FileNode extends Node {
     if(isPassing(this.data)) {
       this.header.classList.add('passing')
       this.container.classList.add('passing')
+    } else if(isFileAllUnactionable(this.data)) {
+      this.header.classList.add('unactionable')
+      this.container.classList.add('unactionable')
     }
 
     var failureOrder = -(this.data.failures || 0)
